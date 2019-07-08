@@ -13,7 +13,7 @@ RSpec.describe PointsController, type: :controller do
 
     it 'returns a defined number of points' do
       points_expected = 5
-      get :show, params: {points: {num: points_expected}}
+      get :show, params: {points: {n_points: points_expected}}
       expect(response.status).to eq(200)
       expect(response.content_type).to eq('application/json')
       json_response = JSON.parse(response.body)
