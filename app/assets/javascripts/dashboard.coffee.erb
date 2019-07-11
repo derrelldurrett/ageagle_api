@@ -1,0 +1,65 @@
+mapboxgl.accessToken = '<%= ENV["MAPBOX_ACCESS_TOKEN"] %>'
+
+addGeoJsonLayer = (weatherData, map) ->
+  # if the source exists, remove and add it back. If the layer doesn't exist, add it.
+  wxData = toGeoJson(weatherData)
+  if map.getSource('temps')?
+    map.getSource('temps').setData(wxData)
+  else
+    map.addSource 'temps',
+      'type': 'geojson'
+      'data':  wxData
+  map.addLayer layerData() unless map.getLayer('weather')?
+
+buildPoint = (d) ->
+    'type': 'Feature',
+    'geometry':
+      'type': 'Point'
+      'coordinates': [d['coord']['lon'], d['coord']['lat']]
+    'properties':
+      'temp': Number.parseFloat(d['main']['temp'] - 273.15).toFixed(1)
+
+callForWeatherData = (inputField, map) ->
+  # probably should clear the existing points?
+  # call the /points endpoint with AJAX to get the weather data
+  $.ajax "/points",
+    type: 'GET'
+    data: {'points': {'n_points': inputField[0].value}}
+    dataType: 'json'
+    success: (result) ->
+      addGeoJsonLayer result, map
+      clearInput inputField
+      inputField.focus()
+    error: (xhr,status,err) ->
+      handleNoWeatherData(xhr,status,err)
+
+clearInput = (inputField) ->
+  inputField[0].value = ''
+
+handleNoWeatherData = (xhr,status,err) ->
+  alert 'There was an error retrieving the data: '+err
+
+layerData = () ->
+  'id': 'weather'
+  'type': 'symbol'
+  'source': 'temps'
+  'layout':
+    'visibility': 'visible'
+    'text-field': '{temp}'
+
+loadMap = () ->
+  new mapboxgl.Map {container: 'map', style: 'mapbox://styles/mapbox/streets-v11'}
+
+reduceWxData = (data) ->
+  buildPoint d for d in data
+
+toGeoJson = (wxData) ->
+  # turn the weather data into GeoJSON
+    'type': 'FeatureCollection'
+    'features': reduceWxData(wxData)
+
+$ ->
+  map = loadMap()
+  $('button#enter-points-btn').on 'click', (b) => callForWeatherData($('input#enter-points-inp'), map)
+  clearInput $('input#enter-points-inp')
+  $('input#enter-points-inp').focus()

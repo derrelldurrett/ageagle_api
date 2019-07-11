@@ -5,10 +5,10 @@
     = javascript_include_tag "application"
   %body
     #content
-      #search-bar{style: 'margin: 30px;' }
+      #search-bar{style: 'margin: 30px;'}
         Enter # of points to display
         %input{id: 'enter-points-inp', name: 'enter-points', type: 'text'}
         %button{id: 'enter-points-btn', name: 'enter-points'} See Weather
-      #map{style: 'margin: 30px; width: 1200px; height: 900px;'}
-      -#%script
-      -#  :plain
+      #description{style: 'margin: 30px;'}
+        (Temperatures in Celsius)
+      #map{style: 'margin: 30px; width: 900px; height: 900px;'}
