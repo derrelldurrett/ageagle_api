@@ -22,11 +22,15 @@ buildPoint = (d) ->
 callForWeatherData = (inputField, map) ->
   # probably should clear the existing points?
   # call the /points endpoint with AJAX to get the weather data
+  nPoints = inputField[0].value
+  if nPoints > 10
+    alert 'No more than 10 points at once allowed!'
+    nPoints = 10
   if map.getSource('temps')?
     map.getSource('temps').setData({})
   $.ajax '/points',
     type: 'GET'
-    data: {'points': {'n_points': inputField[0].value}}
+    data: {'points': {'n_points': nPoints}}
     dataType: 'json'
     success: (result) ->
       addGeoJsonLayer result, map
@@ -49,6 +53,7 @@ layerData = () ->
     'visibility': 'visible'
     'text-field': '{temp}'
     'text-variable-anchor': ['top', 'bottom', 'left', 'right']
+    'text-radial-offset': 5.0
     'text-justify': 'auto'
 
 loadMap = () ->
