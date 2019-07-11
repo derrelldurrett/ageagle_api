@@ -12,3 +12,6 @@ earth.
 * Deployment: 
   * Clone from github and deploy locally as a Rails application, according to your OS's instructions.
   * Currently deployed to Heroku, using my credentials, at https://stark-journey-28166.herokuapp.com/dashboard
+
+* N.B.: Despite using 'text-variable-anchor' for the text location, if the number of points to display temperatures for 
+is too dense, some are not visible without zooming in.

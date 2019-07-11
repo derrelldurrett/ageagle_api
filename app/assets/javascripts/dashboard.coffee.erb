@@ -22,6 +22,8 @@ buildPoint = (d) ->
 callForWeatherData = (inputField, map) ->
   # probably should clear the existing points?
   # call the /points endpoint with AJAX to get the weather data
+  if map.getSource('temps')?
+    map.getSource('temps').setData({})
   $.ajax '/points',
     type: 'GET'
     data: {'points': {'n_points': inputField[0].value}}
@@ -47,7 +49,6 @@ layerData = () ->
     'visibility': 'visible'
     'text-field': '{temp}'
     'text-variable-anchor': ['top', 'bottom', 'left', 'right']
-    'text-radial-offset': 0.5
     'text-justify': 'auto'
 
 loadMap = () ->
