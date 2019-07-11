@@ -2,14 +2,20 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZGRkLWFnZWFnbGUtdGVzdCIsImEiOiJjanhrcDE5aWQxe
 
 addGeoJsonLayer = (weatherData, map) ->
   weatherData = toGeoJson(weatherData)
-  map.addLayer
-    'id': 'weather'
-    'type': 'symbol'
-    'source':
-      'type': 'geojson'
-      'data': weatherData
-    'layout':
-      'visibility': 'visible'
+  if map.getLayer('weather')?
+    map.removeSource('temps') if map.getSource('temps')
+    map.addSource('temps', weatherData)
+  else
+    map.addLayer
+      'id': 'weather'
+      'type': 'symbol'
+      'source':
+        'type': 'geojson'
+        'data': weatherData
+      'layout':
+        'visibility': 'visible'
+        'text-field': '{temp}'
+  map.setLayoutProperty('weather', 'visibility', 'visible')
 
 buildDat = (d) ->
     'type': 'Feature',
