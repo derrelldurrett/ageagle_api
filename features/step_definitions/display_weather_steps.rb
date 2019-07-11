@@ -9,5 +9,5 @@ When 'I enter {int} points to display' do |n_points|
 end
 
 Then 'I expect to see {int} points with temperatures' do |n_points|
-  expect('.map').to have_content('some unknown content') # ?
+  expect('.map').to have_content('') # ?
 end
