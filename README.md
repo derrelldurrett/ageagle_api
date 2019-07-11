@@ -13,5 +13,5 @@ earth.
   * Clone from github and deploy locally as a Rails application, according to your OS's instructions.
   * Currently deployed to Heroku, using my credentials, at https://stark-journey-28166.herokuapp.com/dashboard
 
-* N.B. Occasionally a point appears to go missing, and I've expanded the field of view thinking that may do it, but I'm 
-not sure where points on boundaries get displayed by Mapbox. 
+* N.B. When points are too close to each other, one overwrites the other. Zoom in a bit on the values that appear to see 
+those that are hidden.
