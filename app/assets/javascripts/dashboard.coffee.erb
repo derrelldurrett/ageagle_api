@@ -1,4 +1,4 @@
-mapboxgl.accessToken = '<%= ENV["MAPBOX_ACCESS_TOKEN"] %>' # interesting
+mapboxgl.accessToken = '<%= ENV['MAPBOX_ACCESS_TOKEN'] %>' # interesting
 
 addGeoJsonLayer = (weatherData, map) ->
   # if the source exists, remove and add it back. If the layer doesn't exist, add it.
@@ -22,7 +22,7 @@ buildPoint = (d) ->
 callForWeatherData = (inputField, map) ->
   # probably should clear the existing points?
   # call the /points endpoint with AJAX to get the weather data
-  $.ajax "/points",
+  $.ajax '/points',
     type: 'GET'
     data: {'points': {'n_points': inputField[0].value}}
     dataType: 'json'
@@ -46,6 +46,9 @@ layerData = () ->
   'layout':
     'visibility': 'visible'
     'text-field': '{temp}'
+    'text-variable-anchor': ['top', 'bottom', 'left', 'right']
+    'text-radial-offset': 0.5
+    'text-justify': 'auto'
 
 loadMap = () ->
   new mapboxgl.Map {container: 'map', style: 'mapbox://styles/mapbox/streets-v11'}
