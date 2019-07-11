@@ -1,8 +1,8 @@
 mapboxgl.accessToken = '<%= ENV['MAPBOX_ACCESS_TOKEN'] %>' # interesting
 
 addGeoJsonLayer = (weatherData, map) ->
-  # if the source exists, remove and add it back. If the layer doesn't exist, add it.
   wxData = toGeoJson(weatherData)
+  # if the source exists, overwrite the data
   if map.getSource('temps')?
     map.getSource('temps').setData(wxData)
   else
@@ -20,14 +20,14 @@ buildPoint = (d) ->
       'temp': Number.parseFloat(d['main']['temp'] - 273.15).toFixed(1)
 
 callForWeatherData = (inputField, map) ->
-  # probably should clear the existing points?
-  # call the /points endpoint with AJAX to get the weather data
   nPoints = inputField[0].value
-  if nPoints > 10
+  if nPoints > 10 # rate limit to keep openweathermap.org happier
     alert 'No more than 10 points at once allowed!'
     nPoints = 10
+  # clear the existing points
   if map.getSource('temps')?
     map.getSource('temps').setData({})
+  # call the /points endpoint with AJAX to get the weather data
   $.ajax '/points',
     type: 'GET'
     data: {'points': {'n_points': nPoints}}
