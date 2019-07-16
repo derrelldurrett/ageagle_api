@@ -9,6 +9,6 @@ When 'I enter {int} points to display' do |n_points|
 end
 
 Then 'I expect to see {int} points with temperatures' do |n_points|
-  # This cannot (at the moment) be done, because the map interface doesn't allow us to query the data.
-  expect('.map').to have_content('some content') # ?
+  temps = page.evaluate_script("window.map.getSource('temps')._data")
+  expect(temps.length).to be(5) #
 end
