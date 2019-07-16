@@ -69,6 +69,7 @@ toGeoJson = (wxData) ->
 
 $ ->
   map = loadMap()
+  window.map = map # exposes map to the window context, so we can test against it.
   $('button#enter-points-btn').on 'click', (b) => callForWeatherData($('input#enter-points-inp'), map)
   clearInput $('input#enter-points-inp')
   $('input#enter-points-inp').focus()

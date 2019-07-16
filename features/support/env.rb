@@ -28,31 +28,82 @@ require 'cucumber/rails'
 #
 ActionController::Base.allow_rescue = false
 
-# Remove/comment out the lines below if your app doesn't have a database.
-# For some databases (like MongoDB and CouchDB) you may need to use :truncation instead.
-# begin
-#   DatabaseCleaner.strategy = :transaction
-# rescue NameError
-#   raise "You need to add database_cleaner to your Gemfile (in the :test group) if you wish to use it."
+# This lenghty commented block serves to document the first effort to run headless tests under WSL.
+# Configure Capybara
+# Capybara.javascript_driver = :webkit
+# Capybara::Webkit.configure do |capy_config|
+#   # Enable debug mode. Prints a log of everything the driver is doing.
+#   capy_config.debug = true
+#
+#   # By default, requests to outside domains (anything besides localhost) will
+#   # result in a warning. Several methods allow you to change this behavior.
+#
+#   # Silently return an empty 200 response for any requests to unknown URLs.
+#   capy_config.block_unknown_urls
+#
+#   # Allow pages to make requests to any URL without issuing a warning.
+#   capy_config.allow_unknown_urls
+#
+#   # Allow a specific domain without issuing a warning.
+#   capy_config.allow_url("example.com")
+#
+#   # Allow a specific URL and path without issuing a warning.
+#   capy_config.allow_url("example.com/some/path")
+#
+#   # Wildcards are allowed in URL expressions.
+#   capy_config.allow_url("*.example.com")
+#
+#   # Silently return an empty 200 response for any requests to the given URL.
+#   capy_config.block_url("example.com")
+#
+#   # Timeout if requests take longer than 5 seconds
+#   capy_config.timeout = 20
+#
+#   # Don't raise errors when SSL certificates can't be validated
+#   capy_config.ignore_ssl_errors
+#
+#   # Don't load images
+#   capy_config.skip_image_loading
+#
+#   # Use a proxy
+#   capy_config.use_proxy(
+#       host: "example.com",
+#       port: 1234,
+#       user: "proxy",
+#       pass: "secret"
+#   )
+#
+#   # Raise JavaScript errors as exceptions
+#   capy_config.raise_javascript_errors = true
+# end
+#
+# if Capybara.current_driver == :webkit
+#   require 'headless'
+#
+#   headless = Headless.new
+#   headless.start
 # end
 
-# You may also want to configure DatabaseCleaner to use different strategies for certain features and scenarios.
-# See the DatabaseCleaner documentation for details. Example:
-#
-#   Before('@no-txn,@selenium,@culerity,@celerity,@javascript') do
-#     # { except: [:widgets] } may not do what you expect here
-#     # as Cucumber::Rails::Database.javascript_strategy overrides
-#     # this setting.
-#     DatabaseCleaner.strategy = :truncation
-#   end
-#
-#   Before('not @no-txn', 'not @selenium', 'not @culerity', 'not @celerity', 'not @javascript') do
-#     DatabaseCleaner.strategy = :transaction
-#   end
-#
+# This remaining block is what was used to try a different headless testing approach on WSL.
+# Configure Capybara/Selenium
+require "selenium/webdriver"
+require 'webdrivers/chromedriver'
 
-# Possible values are :truncation and :transaction
-# The :transaction strategy is faster, but might give you threading problems.
-# See https://github.com/cucumber/cucumber-rails/blob/master/features/choose_javascript_database_strategy.feature
-# Cucumber::Rails::Database.javascript_strategy = :truncation
+Capybara.javascript_driver = :headless_chrome
+Webdrivers.logger.level = :DEBUG
+Webdrivers::Chromedriver.required_version = '75.0.3770.140'
+Selenium::WebDriver::Chrome.path = '/usr/bin/google-chrome'
 
+Capybara.register_driver :chrome do |app|
+  Capybara::Selenium::Driver.new(app, browser: :chrome)
+end
+
+Capybara.register_driver :headless_chrome do |app|
+  capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(
+      chromeOptions: { args: %w(headless single-process no-gpu no-sandbox disable-setuid-sandbox disable-dev-shm-usage) } # disable-gpu proxy-server="direct://" proxy-bypass-list="*"
+  )
+
+  Capybara::Selenium::Driver.new app,
+                                 browser: :chrome,
+                                 desired_capabilities: capabilities
+end

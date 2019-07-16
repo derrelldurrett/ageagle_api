@@ -45,6 +45,9 @@ end
 
 group :test do
   gem 'cucumber-rails', require: false
+#  gem 'capybara-webkit'
+#  gem 'headless'
+  gem 'webdrivers', '~> 4.0'
 end
 
 group :development do
